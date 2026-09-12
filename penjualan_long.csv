@@ -1,0 +1,9 @@
+"","id_toko","Kota","Waktu","Penjualan","id"
+"1","T1","Jakarta","Minggu1",120,1
+"2","T2","Bandung","Minggu1",150,2
+"3","T3",NA,"Minggu1",95,3
+"4","T4","Surabaya","Minggu1",NA,4
+"5","T1","Jakarta","Minggu2",135,1
+"6","T2","Bandung","Minggu2",140,2
+"7","T3",NA,"Minggu2",110,3
+"8","T4","Surabaya","Minggu2",NA,4
