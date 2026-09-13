@@ -1,0 +1,365 @@
+---
+title: "Kelompok13"
+author: "Kelompok 13"
+format: html
+embed-resources: true
+theme: yeti
+toc: true
+toc-title: "Navigasi"
+toc-depth: 5
+editor: visual
+---
+
+## Tim Penyusun
+
+::: {.callout-tip icon="false"}
+1.  Bagas Febry Gunawan - X1005261001
+2.  Cindy Mayesra Azahra - M0501261062
+3.  Salvador Sarmento - M0501261801
+:::
+
+## Penyelesaian Soal
+
+### Soal 1. Pembersihan Data
+
+Lakukan tahapan berikut.
+
+1.  Buat data frame bernama `nilai_raw` secara manual di R berdasarkan Tabel 1.
+
+2.  Identifikasi nilai yang hilang pada dataset secara sistematis. Ubah tanda hubung (`"-"`) pada nilai Statistika milik Dewi menjadi nilai hilang standar R, yaitu `NA`.
+
+3.  Lakukan imputasi terhadap nilai `Statistika` yang kosong menggunakan rata-rata nilai Statistika mahasiswa lainnya yang tersedia.
+
+4.  Buat kolom baru bernama `Status_Umur` menggunakan fungsi `ifelse()` dengan ketentuan:\
+    `Dewasa` jika umur ≥ 21 tahun;\
+    `Muda` jika umur \< 21 tahun.
+
+5.  Identifikasi dan hapus baris pengamatan yang duplikat.
+
+6.  Simpan dataset yang telah dibersihkan ke dalam file bernama **`nilai_bersih.csv`**.
+
+#### Penyelesaian
+
+##### Poin 1
+
+```{r}
+nilai_raw <- data.frame(
+  Nama = c("Andi", "Budi", "Citra", "Dewi", "Andi"),
+  Matematika = c(80, 90, NA, 75, 80),
+  Statistika = c(85, 88, 78, "-", 85),
+  Umur = c(21, 20, 22, 21, 21)
+)
+nilai_raw
+```
+
+##### Poin 2
+
+```{r}
+nilai_raw$Statistika[nilai_raw$Statistika == "-"] <- NA
+nilai_raw$Statistika <- as.numeric(nilai_raw$Statistika)
+nilai_raw
+```
+
+##### Poin 3
+
+```{r}
+nilai_raw$Statistika[is.na(nilai_raw$Statistika)] <- mean(nilai_raw$Statistika, na.rm = TRUE)
+
+nilai_raw
+```
+
+##### Poin 4
+
+```{r}
+nilai_raw$Status_Umur <- ifelse(nilai_raw$Umur >= 21, "Dewasa", "Muda")
+
+nilai_raw
+```
+
+##### Poin 5
+
+```{r}
+nilai_raw[duplicated(nilai_raw), ]
+```
+
+```{r}
+nilai_bersih <- nilai_raw[!duplicated(nilai_raw), ]
+nilai_bersih
+```
+
+##### Poin 6
+
+```{r}
+setwd(dir = "D:\\00. S2 SSD IPB\\Bahan Ajar\\SEM 1\\Pemrograman Statistika\\Praktikum\\4")
+write.csv(nilai_bersih, "nilai_bersih.csv")
+```
+
+Link hasil export setelah diunggah di Github: [nilai_bersih.csv](https://github.com/bagasfebry/Praktikum-STA2561-X1005261001/blob/main/nilai_bersih.csv)
+
+### Soal 2. Subsetting dan Pengurutan Multikriteria
+
+Lakukan tahapan berikut.
+
+1.  Buat data frame bernama `profil` secara manual di R berdasarkan Tabel 2.
+
+2.  Lakukan penyaringan (subsetting) sehingga hanya menyisakan pengamatan yang memenuhi salah satu kondisi berikut:\
+    gender laki-laki `(m)` dan `v1 > 9` ; atau\
+    gender perempuan `(f)` dan `v3 <= 10`.
+
+3.  Urutkan data hasil penyaringan secara multikriteria, dengan ketentuan:\
+    `gender` diurutkan secara *descending*;\
+    untuk pengamatan dengan `gender` yang sama, `v5` diurutkan secara *ascending*.
+
+4.  Simpan hasil akhir ke dalam file bernama **`profil_filter.csv`**.
+
+#### Penyelesaian
+
+##### Poin 1
+
+```{r}
+profil<-data.frame(
+  gender = c("f","f","f","m","m","f","m","m","f","m"),
+  v1 = c(8,15,8,14,8,10,9,9,10,12),
+  v2 = c(9,8,13,9,2,6,9,10,13,10),
+  v3 = c(5,9,12,8,9,10,7,8,6,9),
+  v4 = c(9,5,6,NA,16,9,13,10,7,8),
+  v5 = c(9,10,7,11,8,10,9,5,10,17),
+  v6 = c(9,8,9,10,10,10,12,10,12,7),
+  v7 = c(5,10,14,6,8,9,10,6,13,9),
+  v8 = c(9,12,12,11,9,7,9,12,9,10),
+  v9 = c(11,9,12,11,8,7,11,6,6,7),
+  v10 = c(8,15,9,8,9,11,7,8,9,7)
+)
+profil
+```
+
+##### Poin 2
+
+```{r}
+filter <- (profil$gender=="m" & profil$v1>9) | (profil$gender=="f" & profil$v3<=10)
+subs<-profil[filter,]
+subs
+```
+
+##### Poin 3
+
+```{r}
+urut<-order(subs$gender, subs$v5, decreasing = c(T,F),method = "radix")
+terurut<-subs[urut,]
+terurut
+```
+
+##### Poin 4
+
+```{r}
+setwd(dir = "D:\\00. S2 SSD IPB\\Bahan Ajar\\SEM 1\\Pemrograman Statistika\\Praktikum\\4")
+write.csv(terurut,"profil_filter.csv")
+```
+
+Link hasil export setelah diunggah di Github: [profil_filter.csv](https://github.com/bagasfebry/Praktikum-STA2561-X1005261001/blob/main/profil_filter.csv)
+
+### Soal 3. Penggabungan dan Reshaping Data
+
+Diberikan dua data frame mengenai skor penjualan mingguan beberapa toko berikut.
+
+```         
+df_sales <- data.frame(   id_toko = c("T1", "T2", "T3"),   Minggu1 = c(120, 150, 95),   Minggu2 = c(135, 140, 110) )  df_info <- data.frame(   id = c("T1", "T2", "T4"),   Kota = c("Jakarta", "Bandung", "Surabaya") )
+```
+
+Lakukan tahapan berikut.
+
+1.  Gabungkan `df_sales` dan `df_info` menggunakan fungsi `merge()` dengan metode Full Outer Join, sehingga seluruh toko dari kedua data frame tetap disertakan.\
+    Perhatikan bahwa nama variabel kunci pada kedua data frame berbeda, yaitu `id_toko` pada `df_sales` dan `id` pada `df_info`. Gunakan argumen penggabungan yang sesuai.
+
+2.  Ubah struktur data hasil penggabungan dari format Wide menjadi Long, sehingga:\
+    `Minggu1` dan `Minggu2` digabung menjadi satu kolom bernama `Waktu`;\
+    nilai penjualan disimpan dalam satu kolom bernama `Penjualan`.
+
+Simpan dataset dalam format Long tersebut ke dalam file bernama **`penjualan_long.csv`**.
+
+#### Penyelesaian
+
+##### Poin 1
+
+```{r}
+df_sales <- data.frame(
+  id_toko = c("T1", "T2", "T3"),
+  Minggu1 = c(120, 150, 95),
+  Minggu2 = c(135, 140, 110)
+)
+
+df_info <- data.frame(
+  id = c("T1", "T2", "T4"),
+  Kota = c("Jakarta", "Bandung", "Surabaya")
+)
+
+df_merge<-merge(x = df_sales, y = df_info, by = 1, all = T)
+row.names(df_merge)<-NULL
+df_merge
+```
+
+##### Poin 2
+
+```{r}
+df_long<-reshape(data = df_merge,varying = c("Minggu1", "Minggu2"), v.names = "Penjualan", timevar = "Waktu", times = c("Minggu1", "Minggu2"), direction = "long")
+row.names(df_long) <- NULL
+df_long
+```
+
+##### Poin 3
+
+```{r}
+write.csv(df_long,"penjualan_long.csv")
+```
+
+Link hasil export setelah diunggah di Github: [penjualan_long.csv](https://github.com/bagasfebry/Praktikum-STA2561-X1005261001/blob/main/penjualan_long.csv)
+
+### Soal 4. Eksplorasi Visual
+
+Gunakan dataset bawaan R `CO2` untuk mengeksplorasi hubungan antara konsentrasi karbon dioksida (`conc`) dan tingkat penyerapan karbon dioksida (`uptake`) pada tanaman.
+
+1.  Kenali struktur dataset `CO2` dan identifikasi peran peubah `Plant`, `Type`, `Treatment`, `conc`, dan `uptake`, kemudian buat grafik menggunakan **base R** untuk menunjukkan hubungan `conc` dan `uptake` dengan mengatur bentuk dan ukuran titik, warna, judul, label sumbu, serta rentang sumbu, lalu tambahkan minimal **dua elemen grafik** menggunakan `points()`, `lines()`, `abline()`, atau `text()`.
+
+2.  Buat satu tampilan grafik berukuran **2 × 2** yang terdiri atas empat jenis visualisasi berbeda untuk mengeksplorasi `conc`, `uptake`, `Type`, dan `Treatment`; tentukan sendiri jenis grafik yang paling sesuai dan berikan judul yang jelas pada setiap grafik.
+
+3.  Gunakan `qplot()` untuk membuat visualisasi cepat hubungan `conc` dan `uptake` berdasarkan `Treatment`, kemudian buat kembali visualisasi tersebut menggunakan `ggplot2` dengan memetakan `Treatment` dan `Type` ke **atribut visual yang berbeda** di dalam `aes()` serta menggunakan `geom_*` yang sesuai.
+
+4.  Kembangkan grafik `ggplot2` tersebut dengan menambahkan minimal satu `stat_*`, satu `scale_*`, serta salah satu `coord_*`, kemudian lengkapi grafik menggunakan `labs()` dan `theme()` atau salah satu tema siap pakai agar grafik lebih informatif dan mudah dibaca.
+
+5.  Simpan grafik akhir menggunakan `ggsave()` dalam format PNG dengan nama **`co2_uptake_visualisasi.png`**, kemudian tuliskan interpretasi mengenai hubungan antara konsentrasi CO₂ dan `uptake` serta perbedaan pola yang terlihat berdasarkan `Type` dan `Treatment`.
+
+#### Penyelesaian
+
+##### Poin 1
+
+```{r}
+df<-CO2
+str(df)
+head(df)
+summary(df$uptake)
+summary(df$conc)
+```
+
+Berdasarkan `str(df)` dan `head(df)` , kita dapat langsung mengidentifikasi struktur data dari `data.frame (df)` , dimana `df` terdiri dari 5 kolom, diantaranya:
+
+1.  Plant: Memiliki tipe data Ordinal Factor dengan 12 level –\> Jenis/kode tanaman
+2.  Type: Memiliki tipe data Factor dengan 2 level –\> Tipe tanaman
+3.  Treatment: Memiliki tipe data Factor dengan 2 level –\> Jenis treatment
+4.  conc: Memiliki tipe data numeric –\> Konsentrasi CO2
+5.  uptake: Memiliki tipe data numeric –\> Uptake CO2 hasil pengamatan
+
+Identifikasi lebih lanjut dari peubah `conc` dan `uptake` yang memiliki tipe data numeric, dapat dilakukan dengan menggunakan fungsi `summary()`.
+
+```{r}
+plot(x = df$conc, y = df$uptake, type = "p", xlab = "Ambient CO2 Concentration", ylab = "CO2 Uptake Rate", 
+     main = "Pengaruh konsentrasi CO2 terhadap CO2 uptake", pch=8, cex=1.2, col="seagreen",
+     xlim = c(0,1000), ylim = c(0,50), axes = F, frame.plot = T)
+meanuptake<-tapply(df$uptake, df$conc, mean)
+unique(df$conc)
+axis(1,unique(df$conc))
+axis(2,seq(0,50, by=5))
+points(unique(df$conc), meanuptake, pch=14, cex=2,col="red")
+lines(unique(df$conc), meanuptake, lty=2, col="red")
+```
+
+##### Poin 2
+
+Set parameter 2 x 2
+
+```{r}
+par(mfrow=c(2,2))
+```
+
+Plot 1,1
+
+```{r}
+hist(x = df$uptake, freq = F, main = "Sebaran Data CO2 Uptake", xlab = "CO2 Uptake")
+curve(dnorm(x, mean = mean(df$uptake), sd = sd(df$uptake)),
+      add = TRUE, col = "red", lwd = 2)
+```
+
+Plot 1,2
+
+```{r}
+plot(x = df$conc, y = df$uptake, type = "p", xlab = "Ambient CO2 Concentration", ylab = "CO2 Uptake Rate", 
+     main = "Pengaruh konsentrasi CO2\nterhadap CO2 uptake", pch=8, cex=1.2, col="seagreen",
+     xlim = c(0,1000), ylim = c(0,50), axes = F, frame.plot = T)
+meanuptake<-tapply(df$uptake, df$conc, mean)
+unique(df$conc)
+axis(1,unique(df$conc))
+axis(2,seq(0,50, by=5))
+points(unique(df$conc), meanuptake, pch=14, cex=2,col="red")
+lines(unique(df$conc), meanuptake, lty=2, col="red")
+```
+
+Plot 2,1
+
+```{r}
+aggr<-aggregate(uptake ~ Plant, data=df, FUN = mean)
+barp<-setNames(aggr[,2],aggr[,1])
+barplot(height = barp, main = "Rata-rata CO2 uptake\nMenurut Jenis Tanaman", xlab = "Jenis Tanaman", ylab="CO2 uptake", ylim=c(0,40))
+```
+
+Plot 2,2
+
+```{r}
+aggr2<-aggregate(uptake ~ Treatment, data=df, FUN = mean)
+piec<-setNames(aggr2[,2],paste(aggr2[,1], "\n", round(aggr2[,2], 2)))
+pie(x = piec, main = "Rata-rata CO2 uptake\nMenurut Treatment")
+```
+
+Karena pada Quatro tidak dapat menampilkan seluruh plot dalam matriks 2 x 2, maka berikut plot hasil exportnya:
+
+![](Rplot.png){fig-align="center"}
+
+##### Poin 3
+
+```{r}
+library(ggplot2)
+qplot(x = conc, y = uptake, data = df, color = Treatment)
+```
+
+```{r}
+gg<-ggplot(data = df, aes(x = conc, y = uptake, colour = Treatment, shape = Type))
+gg1<-gg+geom_point()
+gg1
+```
+
+##### Poin 4
+
+```{r}
+gg2<-gg1+stat_smooth(method="loess", se = FALSE)+
+  scale_color_manual(values = c("chilled" = "skyblue",
+                                "nonchilled" = "red"))+
+  coord_cartesian(xlim = c(0, 1000), ylim = c(0, 50))
+gg2
+```
+
+```{r}
+gg2<- gg2 + labs(title = "Pengaruh konsentrasi CO2 terhadap CO2 uptake",
+                 subtitle = "Menurut Type dan Treatment Tanaman",
+                 x = "Konsentrasi CO2",
+                 y = "Uptake CO2") +
+  theme_minimal()
+gg2
+```
+
+##### Poin 5
+
+```{r}
+ggsave(plot = gg2, filename = "co2_uptake_visualisasi.png")
+```
+
+Link hasil export setelah diunggah di Github: [co2_uptake_visualisasi.png](https://github.com/bagasfebry/Praktikum-STA2561-X1005261001/blob/main/co2_uptake_visualisasi.png)
+
+##### Interpretasi
+
+- Interpretasi mengenai hubungan antara konsentrasi CO₂ dan `uptake`
+
+Uptake meningkat seiring naiknya konsentrasi CO2, tetapi hubungannya tidak linier atau cenderung logaritmik, dimana kenaikan uptake sangat signifikan pada konsentrasi CO2 rendah, kemudian kenaikan uptake melandai pada konsentrasi CO2 tinggi.
+
+- Interpretasi perbedaan pola yang terlihat berdasarkan `Type` dan `Treatment.`
+
+Tanaman `nonchilled` umumnya menunjukkan uptake lebih tinggi di seluruh rentang konsentrasi dibanding `chilled.`
+
+Tipe `Quebec` biasanya menunjukkan uptake lebih tinggi dan mendekati landai lebih cepat dibanding `Mississippi`
